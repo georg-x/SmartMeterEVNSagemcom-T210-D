@@ -8,16 +8,17 @@ import paho.mqtt.client as mqtt
 from gurux_dlms.GXDLMSTranslator import GXDLMSTranslator
 from bs4 import BeautifulSoup
 
+import subprocess
+
 from evnkeyfile import *
 
-# EVN Schlüssel eingeben zB. "36C66639E48A8CA4D6BC8B282A793BBB"
-#evn_schluessel = "dein EVN Schlüssel"
 
 #MQTT Verwenden (True | False)
 useMQTT = False
 useMYSQL = False
 useFILE = False
 useTASMOTA = False 
+useTHINGSPEAK = True
 
 #MQTT Broker IP adresse Eingeben ohne Port!
 mqttBroker = "192.168.1.10"
@@ -211,6 +212,12 @@ while 1:
                 ret = subprocess.call([
                 'curl',
                 'http://' + ip + '/cm?user=admin&password=' + p + '&cmnd=Power%20' + ueberschuss
+                ])
+
+        if useTHINGSPEAK:
+            ret = subprocess.call([
+                'curl',
+                'https://api.thingspeak.com/update?api_key=' + thingspeakapikey + '&field1=' + str(WirkenergieP) + '&field2=' + str(WirkenergieN) + '&field3=' + str(MomentanleistungP) + '&field4=' + str(MomentanleistungN) + '&field5=' + str(MomentanleistungP - MomentanleistungN)
                 ])
 
     except BaseException as err:
