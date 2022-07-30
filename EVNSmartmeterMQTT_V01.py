@@ -11,12 +11,13 @@ from Cryptodome.Cipher import AES
 from time import sleep
 from gurux_dlms.TranslatorOutputType import TranslatorOutputType
 
+from evnkeyfile import *
 
 # EVN Schlüssel eingeben zB. "36C66639E48A8CA4D6BC8B282A793BBB"
-evn_schluessel = "EVN Schlüssel"
+#evn_schluessel = "EVN Schlüssel"
 
 #MQTT Verwenden (True | False)
-useMQTT = True
+useMQTT = False
 
 #MQTT Broker IP adresse Eingeben ohne Port!
 mqttBroker = "192.168.1.10"
@@ -103,7 +104,7 @@ while 1:
 
     try:
         xml = tr.pduToXml(apdu,)
-        soup = BeautifulSoup(xml, 'lxml')
+        soup = BeautifulSoup(xml, 'html.parser')
         results_32 = soup.find_all('uint32')
         results_16 = soup.find_all('uint16')
         results_int16 = soup.find_all('int16')
