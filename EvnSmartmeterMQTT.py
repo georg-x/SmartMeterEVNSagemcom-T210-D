@@ -15,6 +15,9 @@ from evnkeyfile import *
 
 #MQTT Verwenden (True | False)
 useMQTT = False
+useMYSQL = False
+useFILE = False
+useTASMOTA = False 
 
 #MQTT Broker IP adresse Eingeben ohne Port!
 mqttBroker = "192.168.1.10"
@@ -159,6 +162,57 @@ while 1:
             client.publish("Smartmeter/StromL2",StromL2)
             client.publish("Smartmeter/StromL3",StromL3)
             client.publish("Smartmeter/Leistungsfaktor",Leistungsfaktor)
+        if useFILE:
+            f = open("/run/smartmeter.html", "w")
+            f.write("<html><head><title>Smartmeter</title> <meta http-equiv=\"refresh\" content=\"3\"> </head>  <body>  </body></html><pre>")
+            f.write("Leistung   : " + str(MomentanleistungP - MomentanleistungN) + " W\n")
+            f.write("Verbraucht : " + str(WirkenergieP) + "\n")
+            f.write("Eingespeist: " + str(WirkenergieN) + "\n")
+            f.write("L1 : " + str(SpannungL1) + "V " + str(StromL1)+ "A\n")
+            f.write("L2 : " + str(SpannungL2) + "V " + str(StromL2)+ "A\n")
+            f.write("L3 : " + str(SpannungL3) + "V " + str(StromL3)+ "A\n")
+            f.close()
+        
+        if useMYSQL:
+            import mysql.connector
+
+            mydb = mysql.connector.connect(
+              host="MYSQL_HOST",
+              user="MYSQL_USER",
+              password="MYSQL_PW",
+              database="MYSQL_DB"
+            )
+
+            mycursor = mydb.cursor()
+
+            sql = "INSERT INTO TABELLENNAME (zeit, bezug, einspeisung, leistung, U_L1, U_L2, U_L3, I_L1, I_L2, I_L3, Leistungsfaktor) VALUES (utc_timestamp(), %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+            val = (WirkenergieP, WirkenergieN, MomentanleistungP - MomentanleistungN, SpannungL1, SpannungL2, SpannungL3, StromL1, StromL2, StromL3, Leistungsfaktor)
+            mycursor.execute(sql, val)
+
+            mydb.commit()
+
+            print(mycursor.rowcount, "record inserted.")
+
+        if useTASMOTA:
+            import requests
+            ip = 'tasmotaipadresse'
+            p = 'tasmotapasswort'
+            # wenn mindestens soviel eingespeist wird - wird der Tasmota Switch eingeschaltet
+            einspeisungmin = 60
+
+            ueberschuss = 'undef'
+
+            if ( (MomentanleistungP - MomentanleistungN) < ( - einspeisungmin ) ):
+                ueberschuss = 'On'
+            if ( (MomentanleistungP - MomentanleistungN) >0 ):
+                ueberschuss = 'Off'
+            if ( (ueberschuss != 'undef') and ( oldueberschuss != ueberschuss )):
+                oldueberschuss = ueberschuss
+                ret = subprocess.call([
+                'curl',
+                'http://' + ip + '/cm?user=admin&password=' + p + '&cmnd=Power%20' + ueberschuss
+                ])
+
     except BaseException as err:
         print("Fehler beim Synchronisieren. Programm bitte ein weiteres mal Starten.")
         print()
