@@ -217,7 +217,7 @@ while 1:
         if useTHINGSPEAK:
             ret = subprocess.call([
                 'curl',
-                'https://api.thingspeak.com/update?api_key=' + thingspeakapikey + '&field1=' + str(WirkenergieP) + '&field2=' + str(WirkenergieN) + '&field3=' + str(MomentanleistungP) + '&field4=' + str(MomentanleistungN) + '&field5=' + str(MomentanleistungP - MomentanleistungN)
+                'https://api.thingspeak.com/update?api_key=' + thingspeakapikey + '&field1=' + str(WirkenergieP) + '&field2=' + str(WirkenergieN) + '&field3=' + str(MomentanleistungP) + '&field4=' + str(MomentanleistungN) + '&field5=' + str(MomentanleistungP - MomentanleistungN) + '&field6=' + str(SpannungL1) + '&field7=' + str(SpannungL2) + '&field8=' + str(SpannungL3)
                 ])
 
     except BaseException as err:
