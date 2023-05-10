@@ -1,19 +1,23 @@
 [Unit]
-Description=Service File for Smartmeter
+Description=SmartMeterData Script
+After=multi-user.target
 
 [Service]
+Type=simple
 User=root
 WorkingDirectory=/home/pi/SmartMeterEVNSagemcom-T210-D/
-ExecStart=/usr/bin/python3 EvnSmartmeterMQTT.py
+ExecStart=/usr/bin/python3 AusleseSkript.py
 Restart=always
+# replace /home/user/.virtualenv/bin/python with your virtualenv and main.py with your script
 
 [Install]
 WantedBy=multi-user.target
 
-# Place in /etc/systemd/system
+# Place in /etc/systemd/system or use the service.sh script 
 # systemctl daemon-reload
 # systemctl start smartmeter.service
 # systemctl status smartmeter.service
 # systemctl enable smartmeter.service
 # systemctl disable smartmetere.service
 # https://www.shubhamdipt.com/blog/how-to-create-a-systemd-service-in-linux/
+
