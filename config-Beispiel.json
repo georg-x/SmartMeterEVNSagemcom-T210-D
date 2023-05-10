@@ -1,0 +1,21 @@
+{
+    "port": "/dev/ttyUSB0",
+    "baudrate": 2400,
+    "key": "<EVNKEY>",
+    "printValue": true,
+    "useMQTT": false,
+    "mqttbrokerip": "",
+    "mqttbrokerport": "",
+    "mqttbrokeruser": "",
+    "mqttbrokerpasswort": "",
+    "useInfluxdb": false,
+    "influxdbip": "",
+    "influxdbport":"",
+    "useThingSpeak": true,
+    "thingSpeakApiKey":"<ThingSpeakApiKey>",
+    "useTasmota": true,
+    "tasmotaIpAdresse":"10.0.0.1",
+    "tasmotaUser":"admin",
+    "tasmotaPasswort":"admin",
+    "tasmotaEinspeiseMin":100
+}
