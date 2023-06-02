@@ -8,7 +8,7 @@ User=root
 WorkingDirectory=/home/pi/SmartMeterEVNSagemcom-T210-D/
 ExecStart=/usr/bin/python3 AusleseSkript.py
 Restart=always
-RuntimeMaxSec=6h
+RuntimeMaxSec=1h
 
 [Install]
 WantedBy=multi-user.target
