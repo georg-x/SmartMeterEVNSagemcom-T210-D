@@ -259,7 +259,23 @@ while 1:
         print("1.0.2.8.0.255\tWirkenergie Lieferung [kWh]:\t "+str(WirkenergieN))
         print("-------------\tLeistungsfaktor:\t\t "+str(Leistungsfaktor))
         print("-------------\tWirkleistunggesamt [w]:\t\t " + str(MomentanleistungP-MomentanleistungN))
-        
+        f = open("/mnt/ramdisk/index.html", "w")
+        f.write("\n\t\t*** KUNDENSCHNITTSTELLE ***\n\nOBIS Code\tBezeichnung\t\t\t Wert<br>")
+        f.write(now.strftime("%d.%m.%Y %H:%M:%S")+"<br>")
+        f.write("1.0.32.7.0.255\tSpannung L1 (V):\t\t "+ str(round(SpannungL1,2))+"<br>")
+        f.write("1.0.52.7.0.255\tSpannung L2 (V):\t\t "+ str(round(SpannungL2,2))+"<br>")
+        f.write("1.0.72.7.0.255\tSpannung L3 (V):\t\t "+ str(round(SpannungL3,2))+"<br>")
+        f.write("1.0.31.7.0.255\tStrom L1 (A):\t\t\t "+ str(round(StromL1,2))+"<br>")
+        f.write("1.0.51.7.0.255\tStrom L2 (A):\t\t\t "+ str(round(StromL2,2))+"<br>")
+        f.write("1.0.71.7.0.255\tStrom L3 (A):\t\t\t "+ str(round(StromL3,2))+"<br>")
+        f.write("1.0.1.7.0.255\tWirkleistung Bezug [W]: \t "+str(MomentanleistungP)+"<br>")
+        f.write("1.0.2.7.0.255\tWirkleistung Lieferung [W]:\t "+str(MomentanleistungN)+"<br>")
+        f.write("1.0.1.8.0.255\tWirkenergie Bezug [kWh]:\t "+str(WirkenergieP)+"<br>")
+        f.write("1.0.2.8.0.255\tWirkenergie Lieferung [kWh]:\t "+str(WirkenergieN)+"<br>")
+        f.write("-------------\tLeistungsfaktor:\t\t "+str(Leistungsfaktor)+"<br>")
+        f.write("-------------\tWirkleistunggesamt [w]:\t\t " + str(MomentanleistungP-MomentanleistungN)+"<br>")
+        f.close()
+
         #MQTT
         if useMQTT:
             client.publish("Smartmeter/WirkenergieBezug",WirkenergieP)
