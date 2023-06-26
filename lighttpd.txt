@@ -1,0 +1,3 @@
+apt-get install lighttpd
+rmdir /var/www/html
+ln -s /mnt/ramdisk /var/www/html
