@@ -1,0 +1,2 @@
+#mkdir /mnt/ramdisk/
+tmpfs   /mnt/ramdisk    tmpfs nodev,nosuid,size=2M      0       0
