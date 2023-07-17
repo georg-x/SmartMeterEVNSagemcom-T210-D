@@ -15,7 +15,7 @@ import time
 import subprocess
 
 #Aktuellen Dateipfad finden und mit config.json erweitern
-configFile = os.path.dirname(os.path.realpath(__file__)) + '/config.json' 
+configFile = os.path.dirname(os.path.realpath(__file__)) + '/config.json'
 
 # Überprüfung ob ein Config Datei vorhanden ist sonst kommt eine Fehlermeldung und beendet das Programm
 if not os.path.exists(configFile):
@@ -83,7 +83,7 @@ if useinfluxdb:
         print()
         print("Fehler: ", format(err))
         sys.exit()
-    
+
 
 # Werte im XML File
 octet_string_values = {}
@@ -128,7 +128,7 @@ ser = serial.Serial( port=comport,
 
 
 while 1:
-    daten = ser.read(size=282).hex()    
+    daten = ser.read(size=282).hex()
     mbusstart = daten[0:8]
     frameLen=int("0x" + mbusstart[2:4],16)
     systemTitel = daten[22:38]
@@ -206,8 +206,8 @@ while 1:
 
     except BaseException as err:
         print("Fehler: ", format(err))
-        continue;    
-    
+        continue;
+
 
     #MQTT
     if useMQTT:
@@ -219,7 +219,7 @@ while 1:
             except:
                 print("Lost Connection to MQTT...Trying to reconnect in 2 Seconds")
                 time.sleep(2)
-                
+
     if useThingSpeak:
         ret = subprocess.call([
                 'curl',
@@ -260,7 +260,11 @@ while 1:
         print("-------------\tLeistungsfaktor:\t\t "+str(Leistungsfaktor))
         print("-------------\tWirkleistunggesamt [w]:\t\t " + str(MomentanleistungP-MomentanleistungN))
         f = open("/mnt/ramdisk/index.html", "w")
+        f.write("<html>")
         f.write("\n\t\t*** KUNDENSCHNITTSTELLE ***\n\nOBIS Code\tBezeichnung\t\t\t Wert<br>")
+        f.write("<meta http-equiv=\"refresh\" content=\"60\" >")
+        f.write("</head>")
+        f.write("<body>")
         f.write(now.strftime("%d.%m.%Y %H:%M:%S")+"<br>")
         f.write("1.0.32.7.0.255\tSpannung L1 (V):\t\t "+ str(round(SpannungL1,2))+"<br>")
         f.write("1.0.52.7.0.255\tSpannung L2 (V):\t\t "+ str(round(SpannungL2,2))+"<br>")
@@ -274,6 +278,8 @@ while 1:
         f.write("1.0.2.8.0.255\tWirkenergie Lieferung [kWh]:\t "+str(WirkenergieN)+"<br>")
         f.write("-------------\tLeistungsfaktor:\t\t "+str(Leistungsfaktor)+"<br>")
         f.write("-------------\tWirkleistunggesamt [w]:\t\t " + str(MomentanleistungP-MomentanleistungN)+"<br>")
+        f.write("</body>")
+        f.write("</html>")
         f.close()
 
         #MQTT
