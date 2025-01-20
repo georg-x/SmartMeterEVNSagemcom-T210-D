@@ -15,7 +15,7 @@ import time
 import subprocess
 
 #Aktuellen Dateipfad finden und mit config.json erweitern
-configFile = os.path.dirname(os.path.realpath(__file__)) + '/config.json'
+configFile = os.path.dirname(os.path.realpath(__file__)) + '/config.json' 
 
 # Überprüfung ob ein Config Datei vorhanden ist sonst kommt eine Fehlermeldung und beendet das Programm
 if not os.path.exists(configFile):
@@ -31,7 +31,7 @@ if not os.access(configFile, os.R_OK):
 config = json.load(open(configFile))
 
 # Überprüfung ob alle Daten in der Config vorhanden sind
-neededConfig = ['port', 'baudrate', 'key', 'printValue', 'useMQTT', 'mqttbrokerip', 'mqttbrokerport', 'mqttbrokeruser', 'mqttbrokerpasswort', 'useInfluxdb', 'influxdbip', 'influxdbport']
+neededConfig = ['port', 'baudrate', 'key', 'printValue', 'useMQTT', 'mqttbrokerip', 'mqttbrokerport', 'mqttbrokeruser', 'mqttbrokerpasswort', 'useInfluxdb', 'influxdbip', 'influxdbport', 'usegeneric', 'genericUrl', 'genericApiKey']
 for conf in neededConfig:
     if conf not in config:
         print(conf + ' Fehlt im Configfile!')
@@ -75,6 +75,11 @@ influxdbhost = config['influxdbip']
 influxdbport = config['influxdbport']
 influxdbdatenbank = 'SmartMeter'
 
+usegeneric = config['usegeneric']
+genericUrl = config['genericUrl']
+genericApiKey = config ['genericApiKey']
+
+
 if useinfluxdb:
     try:
         clientinfluxdb = InfluxDBClient(host=influxdbhost, port=influxdbport, database=influxdbdatenbank)
@@ -83,7 +88,7 @@ if useinfluxdb:
         print()
         print("Fehler: ", format(err))
         sys.exit()
-
+    
 
 # Werte im XML File
 octet_string_values = {}
@@ -128,7 +133,7 @@ ser = serial.Serial( port=comport,
 
 
 while 1:
-    daten = ser.read(size=282).hex()
+    daten = ser.read(size=282).hex()    
     mbusstart = daten[0:8]
     frameLen=int("0x" + mbusstart[2:4],16)
     systemTitel = daten[22:38]
@@ -206,8 +211,8 @@ while 1:
 
     except BaseException as err:
         print("Fehler: ", format(err))
-        continue;
-
+        continue;    
+    
 
     #MQTT
     if useMQTT:
@@ -219,7 +224,7 @@ while 1:
             except:
                 print("Lost Connection to MQTT...Trying to reconnect in 2 Seconds")
                 time.sleep(2)
-
+                
     if useThingSpeak:
         ret = subprocess.call([
                 'curl',
@@ -242,6 +247,18 @@ while 1:
            'curl',
            'http://' + tasmotaIpAdresse + '/cm?user=' + tasmotaUser + '&password=' + tasmotaPasswort + '&cmnd=Power%20' + ueberschuss
            ])
+
+    if usegeneric:
+        d = datetime.now()
+        if d.minute % 5 == 0 and d.second >= 0 and d.second <= 6:
+            curlParam = genericUrl + '?key=' +  genericApiKey + '&bezug=' + str(WirkenergieP) + '&einspeisung=' + str(WirkenergieN)
+            ret = subprocess.call([
+                'curl',
+                curlParam
+                ])
+            f = open("/mnt/ramdisk/debug.html", "w")
+            f.write(curlParam)
+            f.close()
 
     if printValue:
         now = datetime.now()
