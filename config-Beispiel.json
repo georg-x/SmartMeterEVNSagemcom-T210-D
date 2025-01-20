@@ -17,5 +17,9 @@
     "tasmotaIpAdresse":"10.0.0.1",
     "tasmotaUser":"admin",
     "tasmotaPasswort":"admin",
-    "tasmotaEinspeiseMin":100
+    "tasmotaEinspeiseMin":100,
+    "usegeneric": true,
+    "genericUrl":"https://api.example.com/path/to/api.php",
+    "genericApiKey":"xxxxxxxxxxxxxxxxx"
+
 }
